@@ -1,0 +1,34 @@
+global_defs {
+  router_id {{ inventory_hostname }}
+}
+
+vrrp_script health-check {
+{% if kubernetes_load_balancer_distinct_nodes is sameas false %}
+  script "/usr/bin/curl --silent --max-time 2 --insecure https://localhost:6443/ -o /dev/null && if /usr/sbin/ip addr | /usr/bin/grep -q {{ kubernetes_load_balancer_ip }}; then /usr/bin/curl --silent --max-time 2 --insecure https://{{ kubernetes_load_balancer_ip }}:6443/ -o /dev/null; fi"
+{% else %}
+  script "/usr/bin/killall -0 haproxy"
+{% endif %}
+  interval 2
+  weight 20
+}
+
+vrrp_instance kubernetes {
+  state BACKUP
+  priority {{ kubernetes_keepalived_priority }}
+  interface {{ kubernetes_interface }}
+  virtual_router_id {{ kubernetes_keepalived_virtual_router_id }}
+  advert_int {{ kubernetes_keepalived_advert_int }}
+
+  authentication {
+    auth_type PASS
+    auth_pass {{ kubernetes_keepalived_auth_pass }}
+  }
+
+  virtual_ipaddress {
+    {{ kubernetes_load_balancer_ip }}
+  }
+
+  track_script {
+    health-check weight 20
+  }
+}

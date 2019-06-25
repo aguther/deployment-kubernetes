@@ -1,0 +1,70 @@
+---
+- name: ensure CentOS repo version is absent
+  yum:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+    - docker
+    - docker-client
+    - docker-client-latest
+    - docker-common
+    - docker-latest
+    - docker-latest-logrotate
+    - docker-logrotate
+    - docker-engine
+
+- name: add repository
+  get_url:
+    url: https://download.docker.com/linux/centos/docker-ce.repo
+    dest: /etc/yum.repos.d/docker-ce.repo
+    mode: 0644
+
+- name: install
+  yum:
+    name: "{{ item }}"
+    state: latest
+  with_items:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+    - "docker-ce{%if docker_version != 'latest' %}-{{ docker_version }}{% endif %}"
+  register: docker_install_packages
+
+- include_tasks: lock-version.yml
+  when: docker_version != 'latest' and docker_install_packages.changed
+
+- name: "create config directory"
+  file:
+    path: /etc/docker
+    state: directory
+    mode: 0755
+
+- name: "change cgroupdriver to systemd"
+  template:
+    src: daemon.json.j2
+    dest: /etc/docker/daemon.json
+    owner: root
+    group: root
+    mode: 0644
+  register: docker_cgroupdriver_configure
+
+- name: "add users to group 'docker'"
+  user:
+    name: "{{ item }}"
+    groups: docker
+    append: yes
+  with_items: "{{ docker_group_users }}"
+  register: docker_user_group_configure
+
+- name: reload when configuration changed
+  service:
+    name: docker.service
+    state: reloaded
+  when: (docker_cgroupdriver_configure.changed)
+        or (docker_user_group_configure.changed)
+
+- name: enable and start
+  service:
+    name: docker.service
+    state: started
+    enabled: yes

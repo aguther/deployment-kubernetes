@@ -1,0 +1,121 @@
+---
+- hosts:
+    - centos
+  vars:
+    - ansible_become: no
+    - ansible_connection: local
+  roles:
+    - ssh-bootstrap/create-key
+  tags:
+    - ssh
+
+- hosts:
+    - centos
+  vars:
+    - ansible_connection: ssh
+    - ansible_ssh_user: "{{ ssh_bootstrap_user }}"
+    - ansible_ssh_pass: "{{ ssh_bootstrap_password }}"
+  roles:
+    - ssh-bootstrap/authorize
+    - ssh-bootstrap/distribute
+  tags:
+    - ssh
+
+- hosts:
+    - centos
+  any_errors_fatal: true
+  roles:
+    - os/hostname
+    - os/hosts
+    - os/proxy
+    - os/chrony
+    - os/selinux/not-enforcing
+    - os/firewall/disable
+    - os/swap/disable
+    - os/rsync
+  tags:
+    - prepare
+
+- hosts:
+    - kubernetes-nodes
+  any_errors_fatal: true
+  roles:
+    - docker/ce
+  tags:
+    - docker
+
+- hosts:
+    - kubernetes-nodes
+  any_errors_fatal: true
+  roles:
+    - os/proxy/docker
+  tags:
+    - prepare
+
+- hosts:
+    - kubernetes-nodes
+  any_errors_fatal: true
+  roles:
+    - docker/registry/kubernetes/prepare
+  tags:
+    - docker-registry
+
+- hosts:
+    - kubernetes-nodes
+  any_errors_fatal: true
+  roles:
+    - docker/add-registry-certificates
+  tags:
+    - docker-registry-certificates
+
+- hosts:
+    - kubernetes-loadBalancers
+  any_errors_fatal: true
+  roles:
+    - kubernetes/keepalived
+  tags:
+    - kubernetes
+
+- hosts:
+    - kubernetes-nodes
+  any_errors_fatal: true
+  roles:
+    - kubernetes/prepare
+  tags:
+    - kubernetes
+
+- hosts:
+    - kubernetes-nodes
+  any_errors_fatal: true
+  roles:
+    - kubernetes
+    - weave/net/kubernetes
+    - kubernetes/wait-ready
+  tags:
+    - kubernetes
+
+- hosts:
+    - kubernetes-masters[0]
+  any_errors_fatal: true
+  vars:
+    - helm_version: "2.14.1"
+  roles:
+    - helm
+  tags:
+    - helm
+
+- hosts:
+    - kubernetes-masters[0]
+  any_errors_fatal: true
+  roles:
+    - metallb
+  tags:
+    - metallb
+
+- hosts:
+    - kubernetes-masters[0]
+  any_errors_fatal: true
+  roles:
+    - kubernetes/dashboard
+  tags:
+    - dashboard

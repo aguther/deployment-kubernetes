@@ -1,0 +1,11 @@
+= deployment-kubernetes
+
+These roles and playbooks for Ansible have been reused
+from repository 'github.com/aguther/containers-rti'.
+
+They allow the deployment of Kubernetes clusters on CentOS. 
+
+If requested, it supports the deployment of a high-available
+Kubernetes cluster using keepalived and haproxy.
+
+Both virtual machines and bare-metal are supported.

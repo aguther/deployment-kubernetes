@@ -1,0 +1,20 @@
+---
+- name: "kubeadm : get version"
+  command: "/usr/bin/kubeadm version --output short"
+  register: kubernetes_kubeadm_get_version
+
+- name: "kubeadm : set version fact"
+  set_fact:
+    kubernetes_kubeadm_version: "{{ kubernetes_kubeadm_get_version.stdout }}"
+  when: kubernetes_kubeadm_get_version.stdout | regex_search('^v\d+.\d+.\d+(-\w+\.\d+)?$')
+
+- name: "kubeadm : configuration"
+  template:
+    src: kubeadm-config.yml.j2
+    dest: /etc/kubernetes/kubeadm.yml
+    owner: root
+    group: root
+    mode: 0644
+
+- name: "kubeadm : init"
+  command: /usr/bin/kubeadm init --config /etc/kubernetes/kubeadm.yml

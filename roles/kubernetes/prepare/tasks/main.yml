@@ -1,0 +1,57 @@
+---
+- name: "kernel : enable net.bridge.bridge-nf-call-ip6tables"
+  sysctl:
+    name: net.bridge.bridge-nf-call-ip6tables
+    value: "1"
+    state: present
+
+- name: "kernel : enable net.bridge.bridge-nf-call-iptables"
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: "1"
+    state: present
+
+- name: add repository
+  yum_repository:
+    file: kubernetes
+    name: Kubernetes
+    description: Kubernetes
+    baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+    enabled: true
+    gpgcheck: false
+    state: present
+  register: kubernetes_add_repository
+
+- name: update trust
+  command: "/usr/bin/update-ca-trust"
+  when: kubernetes_add_repository.changed
+
+- name: "get version : setup url"
+  set_fact:
+    kubernetes_version_url: "https://storage.googleapis.com/kubernetes-release/release/stable{% if kubernetes_release != 'latest' %}-{{ kubernetes_release }}{% endif %}.txt"
+  when: (kubernetes_version == 'latest')
+
+- name: "get version : fetch latest version of release"
+  set_fact:
+    kubernetes_version: "{{ lookup('url', '{{ kubernetes_version_url }}') | regex_replace('v(.*)', '\\1') }}"
+  when: (kubernetes_version == 'latest')
+
+- name: install packages
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - bash-completion
+    - "kubectl{%if kubernetes_version != 'latest' %}-{{ kubernetes_version }}{% endif %}"
+    - "kubelet{%if kubernetes_version != 'latest' %}-{{ kubernetes_version }}{% endif %}"
+    - "kubeadm{%if kubernetes_version != 'latest' %}-{{ kubernetes_version }}{% endif %}"
+  register: kubernetes_install_packages
+
+- include_tasks: lock-version.yml
+  when: kubernetes_version != 'latest' and kubernetes_install_packages.changed
+
+- name: enable and start
+  service:
+    name: kubelet.service
+    state: started
+    enabled: yes

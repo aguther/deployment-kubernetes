@@ -1,0 +1,8 @@
+---
+helm_version: "2.14.1"
+
+helm_client_version: ""
+helm_server_version: ""
+
+helm_user: "vagrant"
+helm_user_home: "/home/{{ helm_user }}"
