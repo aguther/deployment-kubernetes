@@ -1,0 +1,6 @@
+---
+- hosts:
+    - centos
+  any_errors_fatal: true
+  roles:
+    - os/chrony/sync
