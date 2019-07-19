@@ -1,6 +1,5 @@
 ---
-- name: sync with upstreams (burst)
-  command: chronyc -a "burst 3/5"
-
-- name: makestep
-  command: chronyc -a makestep
+- name: restart to trigger sync
+  service:
+    name: chronyd.service
+    state: restarted
