@@ -22,5 +22,9 @@
         value: "rook-ceph-block"
       - key: alertmanager.persistentVolume.storageClass
         value: "rook-ceph-block"
+      - key: server.global.scrape_interval
+        value: "15s"
+      # - key: server.retention
+      #   value: "1d"
   when: (inventory_hostname == groups['kubernetes-masters'][0])
         and (prometheus_check_deployed.stdout.find('prometheus') == -1)
