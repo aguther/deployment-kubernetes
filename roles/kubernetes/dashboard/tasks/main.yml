@@ -1,6 +1,6 @@
 ---
 - name: "heapster : check installed"
-  shell: "/usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf --namespace=kube-system get pod --no-headers=true --selector k8s-app=heapster | wc -l"
+  shell: "/usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf --namespace={{ kubernetes_dashboard_namespace }} get pod --no-headers=true --selector k8s-app=heapster | wc -l"
   changed_when: no
   register: kubernetes_dashboard_heapster_installed
   when: inventory_hostname == groups['kubernetes-masters'][0]
@@ -10,7 +10,7 @@
         and (kubernetes_dashboard_heapster_installed.stdout | int == 0)
 
 - name: "dashboard : check installed"
-  shell: "/usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf --namespace=kube-system get pod --no-headers=true --selector k8s-app=kubernetes-dashboard | wc -l"
+  shell: "/usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf --namespace={{ kubernetes_dashboard_namespace }} get pod --no-headers=true --selector k8s-app=kubernetes-dashboard | wc -l"
   changed_when: no
   register: kubernetes_dashboard_dashboard_installed
   when: inventory_hostname == groups['kubernetes-masters'][0]

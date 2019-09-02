@@ -4,7 +4,7 @@
     /usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf
       patch service
         kubernetes-dashboard
-        --namespace=kube-system
+        --namespace={{ kubernetes_dashboard_namespace }}
         --type=json
         --patch='[ { "op": "add", "path": "/spec/ports/0/name", "value": "http" } ]'
 
@@ -13,7 +13,7 @@
     /usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf
       patch service
         kubernetes-dashboard
-        --namespace=kube-system
+        --namespace={{ kubernetes_dashboard_namespace }}
         --type=json
         --patch='[ { "op": "replace", "path": "/spec/type", "value": {{ kubernetes_dashboard_service_type }} } ]'
 
@@ -22,7 +22,7 @@
     /usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf
       patch service
         kubernetes-dashboard
-        --namespace=kube-system
+        --namespace={{ kubernetes_dashboard_namespace }}
         --type=json
         --patch='[ { "op": "replace", "path": "/spec/ports/0/port", "value": {{ kubernetes_dashboard_service_port }} } ]'
   when: kubernetes_dashboard_service_port != 80
@@ -32,6 +32,6 @@
     /usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf
       patch service
         kubernetes-dashboard
-        --namespace=kube-system
+        --namespace={{ kubernetes_dashboard_namespace }}
         --type=json
         --patch='[ { "op": "add", "path": "/spec/loadBalancerIP", "value": {{ kubernetes_dashboard_service_ip }} } ]'
