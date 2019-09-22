@@ -1,0 +1,20 @@
+---
+- name: "check deployed"
+  include_role:
+    name: helm/chart/check
+  vars:
+    helm_chart_check_namespace: metrics
+    helm_chart_check_name: metrics-server
+
+- name: deploy
+  include_role:
+    name: helm/chart/install
+  vars:
+    helm_install_namespace: metrics
+    helm_install_name: metrics-server
+    helm_install_chart: "stable/metrics-server"
+    helm_install_wait: yes
+    helm_install_set:
+      - key: "args"
+        value: "{--kubelet-insecure-tls=true,--kubelet-preferred-address-types=InternalIP\\,Hostname\\,ExternalIP}"
+  when: not helm_chart_check
