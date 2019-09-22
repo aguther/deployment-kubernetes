@@ -1,5 +1,5 @@
 ---
-kubernetes_dashboard_version: "2.0.0-beta3"
+kubernetes_dashboard_version: "2.0.0-beta4"
 kubernetes_dashboard_namespace: kubernetes-dashboard
 kubernetes_dashboard_service_type: NodePort
 kubernetes_dashboard_service_port: 30000
