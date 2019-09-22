@@ -97,10 +97,8 @@
 - hosts:
     - kubernetes-masters[0]
   any_errors_fatal: true
-  vars:
-    - helm_version: "2.14.3"
   roles:
-    - helm
+    - helm/3
   tags:
     - helm
 
