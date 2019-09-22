@@ -114,6 +114,6 @@
     - kubernetes-masters[0]
   any_errors_fatal: true
   roles:
-    - kubernetes/dashboard
+    - kubernetes/dashboard-2
   tags:
     - dashboard
