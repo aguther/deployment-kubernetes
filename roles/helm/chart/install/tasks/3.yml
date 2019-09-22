@@ -1,0 +1,33 @@
+---
+- name: check if namespace is created
+  command: >
+    /usr/bin/kubectl
+      --kubeconfig=/etc/kubernetes/admin.conf
+      get namespace
+      {{ helm_install_namespace }}
+  changed_when: no
+  failed_when: no
+  register: helm_install_check_namespace
+  when: helm_install_namespace is defined
+
+- name: create namespace
+  command: >
+    /usr/bin/kubectl
+      --kubeconfig=/etc/kubernetes/admin.conf
+      create namespace
+      {{ helm_install_namespace }}
+  when: (helm_install_namespace is defined)
+        and (helm_install_check_namespace.rc != 0)
+
+- name: install chart
+  command: >
+    /usr/bin/helm install
+      --kubeconfig=/etc/kubernetes/admin.conf
+      {% if helm_install_namespace is defined %} --namespace {{ helm_install_namespace }}{% endif %}
+      {% if helm_install_name is defined %}{{ helm_install_name }}{% else %} --generate-name{% endif %}
+      {{ helm_install_chart }}
+      {%if helm_install_chart_version is defined %} --version {{ helm_install_chart_version }}{% endif %}
+      {%if helm_install_atomic %} --atomic{% endif %}
+      {%if helm_install_wait %} --wait{% endif %}
+      {% if helm_install_value_files is defined and helm_install_value_files | length > 0 %}  --values {% for value_file in helm_install_value_files %}{{ value_file }}{% if loop.index < helm_install_value_files | length %},{% endif %}{% endfor %}{% endif %}
+      {% if helm_install_set is defined and helm_install_set | length > 0 %} --set {% for pair in helm_install_set %}'{{ pair.key }}'='{{ pair.value }}'{% if loop.index < helm_install_set | length %},{% endif %}{% endfor %}{% endif %}

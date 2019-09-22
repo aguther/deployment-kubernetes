@@ -17,9 +17,9 @@
     dest: "{{ metallb_temp_directory.path }}/ansible_metallb_configuration.yaml"
   when: metallb_mode == "bgp"
 
-- name: deploy metallb using helm/install
+- name: deploy metallb using helm
   include_role:
-      name: helm/install-chart
+      name: helm/chart/install
   vars:
     helm_install_namespace: metallb
     helm_install_name: metallb

@@ -1,0 +1,28 @@
+---
+- name: "check deployed"
+  stat:
+    path: "/usr/bin/helm"
+  register: helm_check_deployed
+
+- name: "check client version"
+  command: "/usr/bin/helm version --short"
+  changed_when: no
+  register: helm_check_client_version
+  when: helm_check_deployed.stat.exists
+
+- name: "store client version"
+  set_fact:
+    helm_client_version: "{{ helm_check_client_version.stdout | regex_replace('^(Client): v(\\d+.\\d+.\\d+(-\\w+\\.\\d+)?).*$', '\\2') }}"
+  changed_when: no
+  when: (helm_check_deployed.stat.exists)
+        and (helm_check_client_version.rc == 0)
+
+- include_tasks: 2.yml
+  when: (helm_check_deployed.stat.exists)
+        and (helm_check_client_version.rc == 0)
+        and (helm_client_version.find('v2') != -1)
+
+- include_tasks: 3.yml
+  when: (helm_check_deployed.stat.exists)
+        and (helm_check_client_version.rc == 0)
+        and (helm_client_version.find('v3') != -1)

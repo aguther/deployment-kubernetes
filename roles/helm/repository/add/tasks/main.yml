@@ -1,0 +1,8 @@
+---
+- name: adding repository {{ helm_repository_add_name }}
+  command: >
+    /usr/bin/helm repo add
+      {{ helm_repository_add_name }}
+      {{ helm_repository_add_url }}
+      {%if helm_repository_add_username is defined %} --username {{ helm_repository_add_username }}{% endif %}
+      {%if helm_repository_add_password is defined %} --password {{ helm_repository_add_password }}{% endif %}

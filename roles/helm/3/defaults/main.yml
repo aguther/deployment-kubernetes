@@ -1,0 +1,4 @@
+---
+helm_version: "3.0.0-beta.3"
+
+helm_client_version: ""

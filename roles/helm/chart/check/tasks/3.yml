@@ -1,0 +1,19 @@
+---
+- name: "check"
+  command: >
+    /usr/bin/helm list
+      --kubeconfig=/etc/kubernetes/admin.conf
+      {% if helm_chart_check_namespace is defined %} --namespace {{ helm_chart_check_namespace }}{% endif %}
+      --short
+  changed_when: no
+  register: helm_chart_check_list
+
+- name: "set fact boolean"
+  set_fact:
+    helm_chart_check: true
+  when: helm_chart_check_list.stdout.find(helm_chart_check_name) != -1
+
+- name: "set fact boolean"
+  set_fact:
+    helm_chart_check: false
+  when: helm_chart_check_list.stdout.find(helm_chart_check_name) == -1

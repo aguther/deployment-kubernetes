@@ -1,13 +1,14 @@
 ---
 - name: "check deployed"
-  command: "/usr/bin/helm list --kubeconfig=/etc/kubernetes/admin.conf --short docker-registry"
-  failed_when: no
-  changed_when: no
-  register: docker_registry_check_deployed
-
-- name: deploy registry using helm/install-chart
   include_role:
-      name: helm/install-chart
+    name: helm/chart/check
+  vars:
+    helm_chart_check_namespace: docker-registry
+    helm_chart_check_name: docker-registry
+
+- name: deploy registry using helm
+  include_role:
+      name: helm/chart/install
   vars:
     helm_install_namespace: docker-registry
     helm_install_name: docker-registry
@@ -32,4 +33,4 @@
         value: "LoadBalancer"
       - key: tlsSecretName
         value: "docker-registry-tls"
-  when: (docker_registry_check_deployed.stdout.find('docker-registry') == -1)
+  when: not helm_chart_check

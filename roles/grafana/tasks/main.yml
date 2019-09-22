@@ -1,13 +1,15 @@
 ---
-- name: "check"
-  command: "/usr/bin/helm list --kubeconfig=/etc/kubernetes/admin.conf --short grafana"
-  changed_when: no
-  register: grafana_check_deployed
+- name: "check deployed"
+  include_role:
+    name: helm/chart/check
+  vars:
+    helm_chart_check_namespace: monitoring
+    helm_chart_check_name: grafana
   when: (inventory_hostname == groups['kubernetes-masters'][0])
 
 - name: deploy
   include_role:
-    name: helm/install-chart
+    name: helm/chart/install
   vars:
     helm_install_namespace: monitoring
     helm_install_name: grafana
@@ -25,4 +27,4 @@
       - key: persistence.size
         value: "10Gi"
   when: (inventory_hostname == groups['kubernetes-masters'][0])
-        and (grafana_check_deployed.stdout.find('grafana') == -1)
+        and (not helm_chart_check)
