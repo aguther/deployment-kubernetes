@@ -1,3 +1,4 @@
 ---
 rook_cluster_chart_repo: release
-rook_cluster_chart_version: 1.0.4
+rook_cluster_chart_version: 1.1.1
+rook_cluster_ceph_version: 14.2.4-20190917
