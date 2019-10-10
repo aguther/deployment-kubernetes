@@ -4,7 +4,20 @@
     state: directory
     path: "/etc/docker/certs.d/{{ docker_add_registry_certificate.url }}{%- if docker_add_registry_certificate.port is defined -%}:{{ docker_add_registry_certificate.port }}{%- endif -%}/"
 
-- name: copy certificate
+- name: copy certificate for docker
   copy:
-    src: "{{ docker_add_registry_certificate.path }}/"
+    src: "{{ file }}"
     dest: "/etc/docker/certs.d/{{ docker_add_registry_certificate.url }}{%- if docker_add_registry_certificate.port is defined -%}:{{ docker_add_registry_certificate.port }}{%- endif -%}/"
+  with_fileglob:
+    - "{{ docker_add_registry_certificate.path }}"
+  loop_control:
+    loop_var: "file"
+
+- name: copy certificate for ca-trust
+  copy:
+    src: "{{ file }}"
+    dest: /etc/pki/ca-trust/source/anchors/
+  with_fileglob:
+    - "{{ docker_add_registry_certificate.path }}"
+  loop_control:
+    loop_var: "file"
