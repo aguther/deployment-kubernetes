@@ -1,0 +1,6 @@
+---
+- name: "dashboard : install"
+  command: >
+    /usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf
+      apply
+        --filename=https://raw.githubusercontent.com/kubernetes/dashboard/v{{ kubernetes_dashboard_version }}/aio/deploy/recommended.yaml

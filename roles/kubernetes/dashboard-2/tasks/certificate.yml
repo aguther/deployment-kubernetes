@@ -1,0 +1,47 @@
+---
+- name: "dashboard : certificate : ensure pip is installed"
+  yum:
+    name: python2-pip
+    state: present
+
+- name: "dashboard : certificate : ensure python OpenSSL dependencies are installed"
+  pip:
+    name: pyOpenSSL
+    state: present
+
+- name: "dashboard : certificate : create directory for certificates"
+  file:
+    path: /tmp/kubernetes-dashboard-cert/
+    state: directory
+
+- name: "dashboard : certificate : generate private key"
+  openssl_privatekey:
+    path: /tmp/kubernetes-dashboard-cert/dashboard.key
+    size: 4096
+    type: RSA
+
+- name: "dashboard : certificate : generate certificate request"
+  openssl_csr:
+    path: /tmp/kubernetes-dashboard-cert/dashboard.csr
+    privatekey_path: /tmp/kubernetes-dashboard-cert/dashboard.key
+    common_name: "/C=/ST=/L=/O=/OU=/CN=kubernetes-dashboard"
+
+- name: "dashboard : certificate : generate self-signed certificate"
+  openssl_certificate:
+    path: /tmp/kubernetes-dashboard-cert/dashboard.crt
+    privatekey_path: /tmp/kubernetes-dashboard-cert/dashboard.key
+    csr_path: /tmp/kubernetes-dashboard-cert/dashboard.csr
+    provider: selfsigned
+
+- name: "dashboard : certificate : create secret with certificates"
+  command: >
+    /usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf
+      create secret generic
+        kubernetes-dashboard-certs
+        --namespace={{ kubernetes_dashboard_namespace }}
+        --from-file=/tmp/kubernetes-dashboard-cert
+
+- name: "dashboard : certificate : remove directory with certificates"
+  file:
+    path: /tmp/kubernetes-dashboard-cert/
+    state: absent

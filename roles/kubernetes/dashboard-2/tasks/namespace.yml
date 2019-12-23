@@ -1,0 +1,6 @@
+---
+- name: "dashboard : certificate : create namespace"
+  command: >
+    /usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf
+      create namespace
+        kubernetes-dashboard
