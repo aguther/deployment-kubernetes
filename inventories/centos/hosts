@@ -86,6 +86,7 @@ docker_load_push_images_registry_password=P@ssw0rd
 docker_add_registry_certificates=[]
 
 # kubernetes
+kubernetes_release=1.17
 kubernetes_interface=ens33
 kubernetes_load_balancer=192.168.108.200
 kubernetes_load_balancer_ip=192.168.108.200
