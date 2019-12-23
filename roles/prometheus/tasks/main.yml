@@ -26,7 +26,7 @@
         value: "rook-ceph-block"
       - key: server.global.scrape_interval
         value: "15s"
-      # - key: server.retention
-      #   value: "1d"
+      - key: server.retention
+        value: "7d"
   when: (inventory_hostname == groups['kubernetes-masters'][0])
         and (not helm_chart_check)
