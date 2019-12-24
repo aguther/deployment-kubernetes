@@ -23,7 +23,7 @@
       - key: persistence.storageClassName
         value: "rook-ceph-block"
       - key: persistence.accessModes
-        value: "{ReadWriteMany}"
+        value: "{ReadWriteOnce}"
       - key: persistence.size
         value: "10Gi"
   when: (inventory_hostname == groups['kubernetes-masters'][0])
