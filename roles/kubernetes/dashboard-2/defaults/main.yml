@@ -1,5 +1,5 @@
 ---
-kubernetes_dashboard_version: "2.0.0-beta8"
+kubernetes_dashboard_version: "2.0.0-rc2"
 kubernetes_dashboard_namespace: kubernetes-dashboard
 kubernetes_dashboard_admin_username: kubernetes-dashboard-admin
 kubernetes_dashboard_service_type: NodePort
