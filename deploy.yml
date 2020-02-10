@@ -89,7 +89,7 @@
   any_errors_fatal: true
   roles:
     - kubernetes
-    - weave/net/kubernetes
+    - kubernetes/networking/calico
     - kubernetes/wait-ready
   tags:
     - kubernetes
