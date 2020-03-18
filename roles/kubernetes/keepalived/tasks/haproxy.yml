@@ -1,18 +1,17 @@
 ---
 - name: "haproxy : install"
   yum:
-    name: "{{ item }}"
+    name:
+      - haproxy
+      - psmisc
     state: present
-  with_items:
-    - haproxy
-    - psmisc
 
 - name: "haproxy : sysctl : allow non local bind"
   sysctl:
     sysctl_file: /etc/sysctl.d/99-kubernetes.conf
     state: present
     name: net.ipv4.ip_nonlocal_bind
-    value: 1
+    value: '1'
     sysctl_set: yes
     reload: yes
   register: kubernetes_keepalived_haproxy_sysctl

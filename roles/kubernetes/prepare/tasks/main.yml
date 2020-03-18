@@ -38,13 +38,12 @@
 
 - name: install packages
   yum:
-    name: "{{ item }}"
+    name:
+      - bash-completion
+      - "kubectl{%if kubernetes_version != 'latest' %}-{{ kubernetes_version }}{% endif %}"
+      - "kubelet{%if kubernetes_version != 'latest' %}-{{ kubernetes_version }}{% endif %}"
+      - "kubeadm{%if kubernetes_version != 'latest' %}-{{ kubernetes_version }}{% endif %}"
     state: present
-  with_items:
-    - bash-completion
-    - "kubectl{%if kubernetes_version != 'latest' %}-{{ kubernetes_version }}{% endif %}"
-    - "kubelet{%if kubernetes_version != 'latest' %}-{{ kubernetes_version }}{% endif %}"
-    - "kubeadm{%if kubernetes_version != 'latest' %}-{{ kubernetes_version }}{% endif %}"
   register: kubernetes_install_packages
 
 - include_tasks: lock-version.yml

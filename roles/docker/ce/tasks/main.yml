@@ -1,17 +1,16 @@
 ---
 - name: ensure CentOS repo version is absent
   yum:
-    name: "{{ item }}"
+    name:
+      - docker
+      - docker-client
+      - docker-client-latest
+      - docker-common
+      - docker-latest
+      - docker-latest-logrotate
+      - docker-logrotate
+      - docker-engine
     state: absent
-  with_items:
-    - docker
-    - docker-client
-    - docker-client-latest
-    - docker-common
-    - docker-latest
-    - docker-latest-logrotate
-    - docker-logrotate
-    - docker-engine
 
 - name: add repository
   get_url:
@@ -21,13 +20,12 @@
 
 - name: install
   yum:
-    name: "{{ item }}"
+    name:
+      - yum-utils
+      - device-mapper-persistent-data
+      - lvm2
+      - "docker-ce{%if docker_version != 'latest' %}-{{ docker_version }}{% endif %}"
     state: latest
-  with_items:
-    - yum-utils
-    - device-mapper-persistent-data
-    - lvm2
-    - "docker-ce{%if docker_version != 'latest' %}-{{ docker_version }}{% endif %}"
   register: docker_install_packages
 
 - include_tasks: lock-version.yml

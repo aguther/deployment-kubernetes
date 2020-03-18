@@ -3,51 +3,33 @@
   stat:
     path: "/usr/bin/helm"
   register: helm_check_deployed
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
 
 - name: "check client version"
-  command: "/usr/bin/helm version --client --short"
+  command: "/usr/bin/helm version --short"
   changed_when: no
   register: helm_check_client_version
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
         and (helm_check_deployed.stat.exists)
 
 - name: "store client version"
   set_fact:
-    helm_client_version: "{{ helm_check_client_version.stdout | regex_replace('^(Client): v(\\d+.\\d+.\\d+(-\\w+\\.\\d+)?).*$', '\\2') }}"
+    helm_client_version: "{{ helm_check_client_version.stdout | regex_replace('^v(\\d+.\\d+.\\d+(-\\w+\\.\\d+)?).*$', '\\1') }}"
   changed_when: no
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
         and (helm_check_deployed.stat.exists)
         and (helm_check_client_version.rc == 0)
 
 - include_tasks: deploy.yml
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
         and (not(helm_check_deployed.stat.exists)
             or (helm_version != helm_client_version))
 
-- name: "check init"
-  shell: "/usr/bin/helm list --kubeconfig=/etc/kubernetes/admin.conf"
-  failed_when: no
-  changed_when: no
-  register: helm_check_init
-  when: inventory_hostname == groups['kubernetes-masters'][0]
-
-- name: "check server version"
-  command: "/usr/bin/helm version --server --short"
-  changed_when: no
-  register: helm_check_server_version
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
-        and (helm_check_init.rc == 0)
-
-- name: "store server version"
-  set_fact:
-    helm_server_version: "{{ helm_check_server_version.stdout | regex_replace('^(Server): v(\\d+.\\d+.\\d+(-\\w+\\.\\d+)?).*$', '\\2') }}"
-  changed_when: no
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
-        and (helm_check_init.rc == 0)
-        and (helm_check_server_version.rc == 0)
-
-- include_tasks: init.yml
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
-        and ((helm_check_init.rc != 0)
-             or (helm_version != helm_server_version))
+- name: add stable repository
+  include_role:
+    name: helm/repository/add
+  vars:
+    helm_repository_add_name: stable
+    helm_repository_add_url: https://kubernetes-charts.storage.googleapis.com
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
+        and (not(helm_check_deployed.stat.exists))

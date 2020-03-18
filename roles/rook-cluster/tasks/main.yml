@@ -5,36 +5,9 @@
   vars:
     helm_chart_check_namespace: rook-ceph
     helm_chart_check_name: rook-ceph
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
 
-- name: deploy rook-ceph
-  include_role:
-    name: helm/chart/install
-  vars:
-    helm_install_namespace: rook-ceph
-    helm_install_name: rook-ceph
-    helm_install_chart: "https://charts.rook.io/{{ rook_cluster_chart_repo }}/rook-ceph-v{{ rook_cluster_chart_version }}.tgz"
-    helm_install_wait: yes
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
-        and (rook_ceph_check_deployed.stdout.find('rook-ceph') == -1)
-
-- name: create cluster
-  include_tasks: apply-from-file.yml
-  vars:
-    create_from_file_src: cluster.yml.j2
-    create_from_file_dest: cluster.yml
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
-
-- name: create pool
-  include_tasks: apply-from-file.yml
-  vars:
-    create_from_file_src: pool.yml.j2
-    create_from_file_dest: pool.yml
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
-
-- name: create storageclass
-  include_tasks: apply-from-file.yml
-  vars:
-    create_from_file_src: storageclass.yml.j2
-    create_from_file_dest: storageclass.yml
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
+- name: "deploy"
+  include_tasks: deploy.yml
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
+        and (not helm_chart_check)

@@ -6,7 +6,7 @@
         kubernetes-dashboard
         --namespace={{ kubernetes_dashboard_namespace }}
         --type=json
-        --patch='[ { "op": "add", "path": "/spec/ports/0/name", "value": "http" } ]'
+        --patch='[ { "op": "add", "path": "/spec/ports/0/name", "value": "https" } ]'
 
 - name: "dashboard : service : loadBalancer : change type"
   command: >

@@ -1,10 +1,9 @@
 ---
 - name: "keepalived : install"
   yum:
-    name: "{{ item }}"
+    name:
+      - keepalived
     state: present
-  with_items:
-    - keepalived
 
 - name: "keepalived : configuration"
   template:

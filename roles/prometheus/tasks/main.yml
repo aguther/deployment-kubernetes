@@ -5,7 +5,7 @@
   vars:
     helm_chart_check_namespace: monitoring
     helm_chart_check_name: prometheus
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
 
 - name: deploy
   include_role:
@@ -20,6 +20,8 @@
         value: "LoadBalancer"
       - key: server.service.loadBalancerIP
         value: "{{ prometheus_service_ip }}"
+      - key: server.persistentVolume.size
+        value: "16Gi"
       - key: server.persistentVolume.storageClass
         value: "rook-ceph-block"
       - key: alertmanager.persistentVolume.storageClass
@@ -28,5 +30,5 @@
         value: "15s"
       - key: server.retention
         value: "7d"
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
         and (not helm_chart_check)

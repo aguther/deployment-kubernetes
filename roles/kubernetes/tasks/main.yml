@@ -6,20 +6,20 @@
     - kubernetes-init
 
 - include_tasks: init.yml
-  when: ('kubernetes-masters' in group_names)
+  when: ('kubernetes_masters' in group_names)
   tags:
     - kubernetes
     - kubernetes-init
 
 - include_tasks: join.yml
-  when: ('kubernetes-masters' in group_names)
-        or ('kubernetes-workers' in group_names)
+  when: ('kubernetes_masters' in group_names)
+        or ('kubernetes_workers' in group_names)
   tags:
     - kubernetes
     - kubernetes-join
 
 - include_tasks: configure-masters.yml
-  when: ('kubernetes-masters' in group_names)
+  when: ('kubernetes_masters' in group_names)
         and (hostvars[inventory_hostname].kubeadm_deployed == false)
   tags:
     - kubernetes

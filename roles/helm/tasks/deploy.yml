@@ -7,7 +7,7 @@
 
 - name: download and unarchive
   unarchive:
-    src: "https://storage.googleapis.com/kubernetes-helm/helm-v{{ helm_version }}-linux-amd64.tar.gz"
+    src: "https://get.helm.sh/helm-v{{ helm_version }}-linux-amd64.tar.gz"
     dest: "{{ helm_temp_directory.path }}"
     remote_src: yes
     validate_certs: no

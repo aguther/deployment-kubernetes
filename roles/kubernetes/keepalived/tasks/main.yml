@@ -1,7 +1,7 @@
 ---
 - include_tasks: keepalived.yml
-  when: ("'kubernetes-loadBalancers' in group_names")
+  when: ("'kubernetes_loadBalancers' in group_names")
 
 - include_tasks: haproxy.yml
-  when: ("'kubernetes-loadBalancers' in group_names")
+  when: ("'kubernetes_loadBalancers' in group_names")
         and (kubernetes_load_balancer_distinct_nodes|bool == true)

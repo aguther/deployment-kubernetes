@@ -1,0 +1,27 @@
+---
+- name: deploy rook-ceph
+  include_role:
+    name: helm/chart/install
+  vars:
+    helm_install_namespace: rook-ceph
+    helm_install_name: rook-ceph
+    helm_install_chart: "https://charts.rook.io/{{ rook_cluster_chart_repo }}/rook-ceph-v{{ rook_cluster_chart_version }}.tgz"
+    helm_install_wait: yes
+
+- name: create cluster
+  include_tasks: apply-from-file.yml
+  vars:
+    create_from_file_src: cluster.yml.j2
+    create_from_file_dest: cluster.yml
+
+- name: create pool
+  include_tasks: apply-from-file.yml
+  vars:
+    create_from_file_src: pool.yml.j2
+    create_from_file_dest: pool.yml
+
+- name: create storageclass
+  include_tasks: apply-from-file.yml
+  vars:
+    create_from_file_src: storageclass.yml.j2
+    create_from_file_dest: storageclass.yml

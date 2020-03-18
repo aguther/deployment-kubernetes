@@ -7,7 +7,7 @@ centos-2.vm ansible_host=192.168.8.2 ipaddress=192.168.8.2
 centos-3.vm ansible_host=192.168.8.3 ipaddress=192.168.8.3
 centos-4.vm ansible_host=192.168.8.4 ipaddress=192.168.8.4
 centos-5.vm ansible_host=192.168.8.5 ipaddress=192.168.8.5
-centos-6.vm ansible_host=192.168.8.6 ipaddress=192.168.8.6
+#centos-6.vm ansible_host=192.168.8.6 ipaddress=192.168.8.6
 
 
 # -----------------------------------------------------------------------------
@@ -19,7 +19,7 @@ centos-2.vm
 centos-3.vm
 centos-4.vm
 centos-5.vm
-centos-6.vm
+#centos-6.vm
 
 [centos:vars]
 # ansible
@@ -44,26 +44,26 @@ ssh_bootstrap_password=root
 # -----------------------------------------------------------------------------
 #  kubernetes groups
 # -----------------------------------------------------------------------------
-[kubernetes-masters]
+[kubernetes_masters]
 centos-1.vm
 centos-2.vm
 
-[kubernetes-workers]
+[kubernetes_workers]
 centos-3.vm
 centos-4.vm
 
-[kubernetes-loadBalancers]
+[kubernetes_loadBalancers]
 centos-5.vm
-centos-6.vm
+#centos-6.vm
 
-[kubernetes-nodes:children]
-kubernetes-masters
-kubernetes-workers
+[kubernetes_nodes:children]
+kubernetes_masters
+kubernetes_workers
 
 [kubernetes:children]
-kubernetes-masters
-kubernetes-workers
-kubernetes-loadBalancers
+kubernetes_masters
+kubernetes_workers
+kubernetes_loadBalancers
 
 [kubernetes:vars]
 # docker

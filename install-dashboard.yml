@@ -3,7 +3,6 @@
     - kubernetes_masters[0]
   any_errors_fatal: true
   roles:
-    - docker/load-push-images
+    - kubernetes/dashboard
   tags:
-    - load-images
-    - load-push-images
+    - dashboard

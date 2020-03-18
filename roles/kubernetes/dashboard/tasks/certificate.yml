@@ -1,7 +1,8 @@
 ---
 - name: "dashboard : certificate : ensure pip is installed"
   yum:
-    name: python2-pip
+    name:
+      - python2-pip
     state: present
 
 - name: "dashboard : certificate : ensure python OpenSSL dependencies are installed"

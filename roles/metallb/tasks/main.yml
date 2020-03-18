@@ -5,8 +5,8 @@
   vars:
     helm_chart_check_namespace: metallb
     helm_chart_check_name: metallb
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
 
 - include_tasks: deploy.yml
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
         and (not helm_chart_check)

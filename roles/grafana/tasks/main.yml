@@ -5,7 +5,7 @@
   vars:
     helm_chart_check_namespace: monitoring
     helm_chart_check_name: grafana
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
 
 - name: deploy
   include_role:
@@ -26,5 +26,5 @@
         value: "{ReadWriteOnce}"
       - key: persistence.size
         value: "10Gi"
-  when: (inventory_hostname == groups['kubernetes-masters'][0])
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
         and (not helm_chart_check)

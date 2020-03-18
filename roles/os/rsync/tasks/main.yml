@@ -1,5 +1,6 @@
 ---
 - name: "install"
   yum:
-    name: rsync
+    name:
+      - rsync
     state: installed

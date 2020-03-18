@@ -1,10 +1,9 @@
 ---
 - name: install packages
   yum:
-    name: "{{ item }}"
+    name:
+      - yum-versionlock
     state: present
-  with_items:
-    - yum-versionlock
 
 - name: lock version
   command: "yum versionlock add kubeadm kubectl kubelet"
