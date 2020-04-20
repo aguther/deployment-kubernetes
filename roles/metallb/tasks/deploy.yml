@@ -17,15 +17,17 @@
     dest: "{{ metallb_temp_directory.path }}/ansible_metallb_configuration.yaml"
   when: metallb_mode == "bgp"
 
-- name: deploy metallb using helm
-  include_role:
-      name: helm/chart/install
-  vars:
-    helm_install_namespace: metallb
-    helm_install_name: metallb
-    helm_install_chart: "stable/metallb"
-    helm_install_value_files:
-      - "{{ metallb_temp_directory.path }}/ansible_metallb_configuration.yaml"
+- name: "deploy : create namespace"
+  shell: "/usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f \"https://raw.githubusercontent.com/metallb/metallb/v{{ metallb_version }}/manifests/namespace.yaml\""
+
+- name: "deploy : create configuration"
+  shell: "/usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f \"{{ metallb_temp_directory.path }}/ansible_metallb_configuration.yaml\""
+
+- name: "deploy : create deployment"
+  shell: "/usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf apply -f \"https://raw.githubusercontent.com/metallb/metallb/v{{ metallb_version }}/manifests/metallb.yaml\""
+
+- name: "deploy : create secret"
+  shell: "/usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf create secret generic -n metallb-system memberlist --from-literal=secretkey=\"$(openssl rand -base64 128)\""
 
 - name: delete temporary directory
   file:

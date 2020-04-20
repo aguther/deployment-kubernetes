@@ -1,12 +1,10 @@
 ---
-- name: "check deployed"
-  include_role:
-    name: helm/chart/check
-  vars:
-    helm_chart_check_namespace: metallb
-    helm_chart_check_name: metallb
-  when: (inventory_hostname == groups['kubernetes_masters'][0])
+- name: "check if deployed"
+  shell: "/usr/bin/kubectl --kubeconfig=/etc/kubernetes/admin.conf --namespace=metallb-system get deployment --no-headers=true --selector app=metallb | wc -l"
+  changed_when: no
+  register: metallb_kubernetes_installed
+  when: inventory_hostname == groups['kubernetes_masters'][0]
 
 - include_tasks: deploy.yml
   when: (inventory_hostname == groups['kubernetes_masters'][0])
-        and (not helm_chart_check)
+        and (metallb_kubernetes_installed.stdout | int == 0)
