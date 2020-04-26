@@ -1,0 +1,14 @@
+---
+- name: "openebs : iscsi : install"
+  yum:
+    name:
+      - iscsi-initiator-utils
+    state: present
+
+- name: "openebs : iscsi : services : enable and start"
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: yes
+  with_items:
+    - iscsid.service

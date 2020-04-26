@@ -1,0 +1,7 @@
+---
+- hosts:
+    - kubernetes_nodes
+  roles:
+    - openebs
+  tags:
+    - openebs

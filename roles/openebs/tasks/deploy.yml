@@ -1,0 +1,9 @@
+---
+- name: "openebs : deploy"
+  include_role:
+    name: helm/chart/install
+  vars:
+    helm_install_namespace: openebs
+    helm_install_name: openebs
+    helm_install_chart: "stable/openebs"
+    helm_install_wait: yes

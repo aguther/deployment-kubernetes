@@ -1,0 +1,17 @@
+---
+- name: "check deployed"
+  include_role:
+    name: helm/chart/check
+  vars:
+    helm_chart_check_namespace: openebs
+    helm_chart_check_name: openebs
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
+
+- name: "deploy"
+  include_tasks: deploy-iscsi.yml
+  when: ('kubernetes_nodes' in group_names)
+  
+- name: "deploy operator"
+  include_tasks: deploy.yml
+  when: (inventory_hostname == groups['kubernetes_masters'][0])
+        and (not helm_chart_check)
