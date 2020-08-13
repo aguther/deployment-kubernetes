@@ -1,4 +1,4 @@
 ---
-helm_version: "3.2.0"
+helm_version: "3.3.0"
 
 helm_client_version: ""
